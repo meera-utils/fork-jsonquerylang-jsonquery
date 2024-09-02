@@ -531,6 +531,34 @@ describe('jsonquery', () => {
     ])
   })
 
+  test('should apply iif (1)', () => {
+    const query = ['iif', [['a'], '>', ['b']], 'then', ['a'], 'else', ['b']]
+
+    expect(jsonquery({ a: 2, b: 3 }, query)).toEqual(3)
+    expect(jsonquery({ a: 5, b: 3 }, query)).toEqual(5)
+  })
+
+  test('should apply iif (2)', () => {
+    expect(
+      jsonquery(data, [
+        'map',
+        {
+          name: 'name',
+          age: 'age',
+          details: ['iif', ['age', '>=', 21], 'then', { city: 'city' }, 'else', null]
+        }
+      ])
+    ).toEqual([
+      { name: 'Chris', age: 23, details: { city: 'New York' } },
+      { name: 'Emily', age: 19, details: null },
+      { name: 'Joe', age: 32, details: { city: 'New York' } },
+      { name: 'Kevin', age: 19, details: null },
+      { name: 'Michelle', age: 27, details: { city: 'Los Angeles' } },
+      { name: 'Robert', age: 45, details: { city: 'Manhattan' } },
+      { name: 'Sarah', age: 31, details: { city: 'New York' } }
+    ])
+  })
+
   test('should group items by a key', () => {
     expect(jsonquery(data, ['groupBy', 'city'])).toEqual({
       'New York': [
@@ -663,6 +691,10 @@ describe('jsonquery', () => {
       { name: 'Michelle', age: 27, city: 'Los Angeles' },
       { name: 'Robert', age: 45, city: 'Manhattan' }
     ])
+  })
+
+  test('should process null', () => {
+    expect(jsonquery({}, { nothing: null })).toEqual({ nothing: null })
   })
 
   test('should process "exists"', () => {

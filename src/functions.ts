@@ -80,6 +80,22 @@ const _pick = (object: Record<string, unknown>, getters: Getter[]): unknown => {
   return out
 }
 
+// FIXME: how to be able to use "if" instead of "if"?
+// TODO: document the function
+export const iif = (
+  condition: JSONQuery,
+  _then: 'then',
+  truePart: JSONQuery,
+  _else: 'else',
+  falsePart: JSONQuery
+) => {
+  const _condition = compile(condition)
+  const _truePart = compile(truePart)
+  const _falsePart = compile(falsePart)
+
+  return (data: unknown) => (_condition(data) ? _truePart(data) : _falsePart(data))
+}
+
 export const groupBy = <T>(path: JSONPath | JSONProperty) => {
   const getter = get(path)
 
